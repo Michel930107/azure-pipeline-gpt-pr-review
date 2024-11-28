@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "azure-pipelines-task-lib": "^4.17.3",
+    "node-fetch": "^2.7.0",
+    "openai": "^4.73.1"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.12"
+  }
+}

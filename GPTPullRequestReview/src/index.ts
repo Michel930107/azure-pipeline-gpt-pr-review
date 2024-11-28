@@ -1,60 +1,41 @@
 import * as tl from "azure-pipelines-task-lib/task";
-import { Configuration, OpenAIApi } from 'openai';
+import { OpenAI } from 'openai';
+import { reviewFile, submitConsolidatedReview } from './review';
 import { deleteExistingComments } from './pr';
-import { reviewFile } from './review';
-import { getTargetBranchName } from './utils';
-import { getChangedFiles } from './git';
+import { git } from './git';
+import { Agent } from 'https';
 import https from 'https';
 
 async function run() {
-  try {
-    if (tl.getVariable('Build.Reason') !== 'PullRequest') {
-      tl.setResult(tl.TaskResult.Skipped, "This task should be run only when the build is triggered from a Pull Request.");
-      return;
+    try {
+        const apiKey = tl.getInput('api_key', true) as string;
+        const aoiEndpoint = tl.getInput('aoi_endpoint', false);
+        const supportSelfSignedCertificate = tl.getBoolInput('support_self_signed_certificate', false);
+
+        const httpsAgent = new Agent({
+            rejectUnauthorized: !supportSelfSignedCertificate
+        });
+
+        let openai: OpenAI | undefined;
+        if (!aoiEndpoint) {
+            openai = new OpenAI({ apiKey });
+        }
+
+        await deleteExistingComments(httpsAgent);
+
+        const targetBranch = await git.getTargetBranch();
+        const changedFiles = await git.getChangedFiles(targetBranch);
+
+        for (const file of changedFiles) {
+            await reviewFile(targetBranch, file, httpsAgent, apiKey, openai, aoiEndpoint);
+        }
+
+        // Submit consolidated review after all files are reviewed
+        await submitConsolidatedReview(httpsAgent);
+
+    } catch (err: any) {
+        tl.setResult(tl.TaskResult.Failed, err.message);
     }
-
-    let openai: OpenAIApi | undefined;
-    const supportSelfSignedCertificate = tl.getBoolInput('support_self_signed_certificate');
-    const apiKey = tl.getInput('api_key', true);
-    const aoiEndpoint = tl.getInput('aoi_endpoint');
-
-    if (apiKey == undefined) {
-      tl.setResult(tl.TaskResult.Failed, 'No Api Key provided!');
-      return;
-    }
-
-    if (aoiEndpoint == undefined) {
-      const openAiConfiguration = new Configuration({
-        apiKey: apiKey,
-      });
-
-      openai = new OpenAIApi(openAiConfiguration);
-    }
-
-    const httpsAgent = new https.Agent({
-      rejectUnauthorized: !supportSelfSignedCertificate
-    });
-
-    let targetBranch = getTargetBranchName();
-
-    if (!targetBranch) {
-      tl.setResult(tl.TaskResult.Failed, 'No target branch found!');
-      return;
-    }
-
-    const filesNames = await getChangedFiles(targetBranch);
-
-    await deleteExistingComments(httpsAgent);
-
-    for (const fileName of filesNames) {
-      await reviewFile(targetBranch, fileName, httpsAgent, apiKey, openai, aoiEndpoint)
-    }
-
-    tl.setResult(tl.TaskResult.Succeeded, "Pull Request reviewed.");
-  }
-  catch (err: any) {
-    tl.setResult(tl.TaskResult.Failed, err.message);
-  }
 }
 
 run();
