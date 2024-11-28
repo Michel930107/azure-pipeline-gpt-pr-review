@@ -1,53 +1,93 @@
-# Use OpenAI GPT model to review Pull Requests for Azure Devops
-A task for Azure DevOps build pipelines to add GPT as PR reviewer
+# Azure Pipeline GPT PR Review
+
+An Azure DevOps Pipeline extension that uses OpenAI's GPT models to automatically review Pull Requests and provide intelligent code review feedback.
+
+## Features
+
+- Automated code review using GPT models (GPT-4, GPT-3.5-turbo)
+- Support for both OpenAI and Azure OpenAI endpoints
+- Configurable review contexts:
+  - General Code Review
+  - Security Focused
+  - Performance Focused
+  - Architecture Review
+  - Custom Context with additional instructions
+- Consolidated review comments
+- Self-signed certificate support
+- Configurable token limits
+
+## Prerequisites
+
+- Azure DevOps organization
+- OpenAI API key or Azure OpenAI endpoint
+- Node.js 10.x or later
 
 ## Installation
 
-Installation can be done using [Visual Studio MarketPlace](https://marketplace.visualstudio.com/items?itemName=mustaphalarhrouch.GPTPullRequestReview).
-
-## Usage
-
-Add the tasks to your build definition.
+1. Install the extension from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=fxstreet.GPTPullRequestReview)
+2. Configure your pipeline with the required API key
+3. Add the task to your pipeline YAML
 
 ## Setup
 
-### Give permission to the build service agent
+### Pipeline Configuration
 
-before use this task, make sure that the build service has permissions to contribute to pull requests in your repository :
-
-![contribute_to_pr](https://github.com/mlarhrouch/azure-pipeline-gpt-pr-review/blob/main/images/contribute_to_pr.png?raw=true)
-
-### Allow Task to access the system token
-
-#### Yaml pipelines 
-
-Add a checkout section with persistCredentials set to true.
+Add the following to your pipeline YAML:
 
 ```yaml
 steps:
 - checkout: self
-  persistCredentials: true
+  persistCredentials: true  # Required for PR comments
+- task: GPTPullRequestReview@0
+  inputs:
+    api_key: '$(openai.apikey)'
+    model: 'gpt-4'  # Optional
+    context_type: 'general'  # Optional
+    additional_context: ''  # Optional
 ```
 
-#### Classic editors 
+### Build Service Permissions
 
-Enable the option "Allow scripts to access the OAuth token" in the "Agent job" properties :
+Ensure the build service has permissions to contribute to pull requests:
+1. Go to Project Settings > Repositories
+2. Select your repository
+3. Add Build Service with "Contribute to Pull Requests" permission
 
-![allow_access_token](https://github.com/mlarhrouch/azure-pipeline-gpt-pr-review/blob/main/images/allow_access_token.png?raw=true)
+### Azure OpenAI Configuration
 
-### Azure Open AI service
+When using Azure OpenAI:
+1. Provide the Azure OpenAI endpoint URL
+2. Format: `https://{RESOURCE_NAME}.openai.azure.com/openai/deployments/{DEPLOYMENT_NAME}/chat/completions?api-version={API_VERSION}`
+3. Include your Azure OpenAI API key
 
-If you choose to use the Azure Open AI service, you must fill in the endpoint and API key of Azure OpenAI. The format of the endpoint is as follows: https://{XXXXXXXX}.openai.azure.com/openai/deployments/{MODEL_NAME}/chat/completions?api-version={API_VERSION}
+## Development
 
+```bash
+# Install dependencies
+npm install
 
-### OpenAI Models
+# Clean install
+npm run install:clean
 
-In case you don't use Azure Open AI Service, you can choose which model to use, the supported models are "gpt-4", "gpt-3.5-turbo" and "gpt-3.5-turbo-16k". if no model is selected the "gpt-3.5-turbo" is used.
+# Build
+npm run build
 
-## Contributions
+# Run tests
+npm test
+```
 
-Found and fixed a bug or improved on something? Contributions are welcome! Please target your pull request against the `main` branch or report an issue on [GitHub](https://github.com/mlarhrouch/azure-pipeline-gpt-pr-review/issues) so someone else can try and implement or fix it.
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-[MIT](https://raw.githubusercontent.com/mlarhrouch/azure-pipeline-gpt-pr-review/main/LICENSE)
+ISC License
+
+## Support
+
+For issues and feature requests, please use the [GitHub Issues](https://github.com/Michel930107/azure-pipeline-gpt-pr-review/issues) page.

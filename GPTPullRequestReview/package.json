@@ -1,11 +1,11 @@
 {
   "name": "gptpullrequestreview",
-  "version": "1.0.0",
+  "version": "0.1.4",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean": "rimraf node_modules dist package-lock.json",
-    "prebuild": "rimraf dist",
+    "clean": "npx rimraf node_modules dist package-lock.json",
+    "prebuild": "npx rimraf dist",
     "build": "tsc",
     "pretest": "npm run build",
     "test": "mocha -r ts-node/register tests/**/*.ts --timeout 10000",

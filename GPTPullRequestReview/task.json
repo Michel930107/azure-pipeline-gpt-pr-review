@@ -2,17 +2,13 @@
   "id": "b42fa530-c4a6-11ed-87f6-d1f44a1fead1",
   "name": "GPTPullRequestReview",
   "friendlyName": "FXS Review PullRequest by GPT",
+  "version": "0.1.4",
   "description": "This task use OpenAi GPT model to review PullRequests",
-  "author": "Mustapha Larhrouch",
-  "helpMarkDown": "[More Information](https://github.com/mlarhrouch/azure-pipeline-gpt-pr-review)",
+  "author": "FXStreet",
+  "helpMarkDown": "[More Information](https://github.com/Michel930107/azure-pipeline-gpt-pr-review)",
   "category": "Utility",
   "visibility": ["Build"],
   "demands": [],
-  "version": {
-    "Major": "0",
-    "Minor": "12",
-    "Patch": "3"
-  },
   "minimumAgentVersion": "1.95.0",
   "instanceNameFormat": "GPTPullRequestReview $(message)",
   "inputs": [
@@ -22,22 +18,23 @@
       "label": "Api key",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "Api key of OpenAi or Azure OpenAI."
+      "helpMarkDown": "Api key of OpenAI."
     },
     {
       "name": "context_type",
       "type": "pickList",
       "label": "Review Context",
       "required": false,
-      "defaultValue": "general",
+      "defaultValue": "comprehensive",
       "options": {
+        "comprehensive": "Comprehensive Review",
         "general": "General Code Review",
         "security": "Security Focused",
         "performance": "Performance Focused",
         "architecture": "Architecture Review",
         "custom": "Custom Context"
       },
-      "helpMarkDown": "Select the type of review context to focus on specific aspects"
+      "helpMarkDown": "Select the type of review context to focus on specific aspects. Comprehensive review is recommended for most cases."
     },
     {
       "name": "additional_context",
@@ -51,30 +48,13 @@
       "name": "model",
       "type": "pickList",
       "label": "OpenAI model",
-      "required": false,
+      "required": true,
       "options": {
-        "": "",
         "gpt-4o": "GPT 4o",
         "gpt-4": "GPT 4",
         "gpt-3.5-turbo": "GPT 3.5 Turbo"
       },
-      "helpMarkDown": "The OpenAI model to use. not used if you use Azure OpenAI. if no model is selected, the GPT 4o model is used."
-    },
-    {
-      "name": "aoi_endpoint",
-      "type": "string",
-      "label": "Azure OpenApi Endpoint",
-      "defaultValue": "",
-      "required": false,
-      "helpMarkDown": "Azure OpenApi Endpoint, leave empty to use default endpoint. (optional)"
-    },
-    {
-      "name": "support_self_signed_certificate",
-      "type": "boolean",
-      "label": "Support self-signed certificate",
-      "defaultValue": "false",
-      "required": false,
-      "helpMarkDown": "Select this option to support self-signed certificate."
+      "helpMarkDown": "The OpenAI model to use. If no model is selected, the GPT 4o model is used."
     },
     {
       "name": "max_tokens",
@@ -87,7 +67,7 @@
   ],
   "execution": {
     "Node10": {
-      "target": "dist/index.js"
+      "target": "dist/src/index.js"
     }
   }
 }

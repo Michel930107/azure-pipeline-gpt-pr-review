@@ -8,7 +8,7 @@ Before using this task, ensure that the build service has permissions to contrib
 
 ### Give permission to the build service agent
 
-![contribute_to_pr](https://github.com/mlarhrouch/azure-pipeline-gpt-pr-review/blob/main/images/contribute_to_pr.png?raw=true)
+![contribute_to_pr](https://github.com/Michel930107/azure-pipeline-gpt-pr-review/blob/main/images/contribute_to_pr.png?raw=true)
 
 ### Allow Task to access the system token
 
@@ -28,7 +28,7 @@ steps:
 
 Enable the option "Allow scripts to access the OAuth token" in the "Agent job" properties.
 
-![allow_access_token](https://github.com/mlarhrouch/azure-pipeline-gpt-pr-review/blob/main/images/allow_access_token.png?raw=true)
+![allow_access_token](https://github.com/Michel930107/azure-pipeline-gpt-pr-review/blob/main/images/allow_access_token.png?raw=true)
 
 ### Azure Open AI service
 
@@ -36,7 +36,7 @@ If you choose to use the Azure Open AI service, you must fill in the endpoint an
 
 ### OpenAI Models
 
-In case you don't use Azure Open AI Service, you can choose which model to use, the supported models are "gpt-4", "gpt-3.5-turbo" and "gpt-3.5-turbo-16k". if no model is selected the "gpt-3.5-turbo" is used.
+In case you don't use Azure Open AI Service, you can choose which model to use, the supported models are "gpt-4", "gpt-3.5-turbo" and "gpt-3.5-turbo-16k". if no model is selected the "gpt-4o" is used.
 
 ## How to use it
 
@@ -59,4 +59,3 @@ When the build is triggered from a Pull Request, the task will review it. If the
 ## Compatible with Linux Build Agents
 
 The tasks can execute on all supported build agent operating systems **including Linux and MacOS**.
-
