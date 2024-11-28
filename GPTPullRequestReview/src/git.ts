@@ -1,35 +1,26 @@
-import { SimpleGitOptions, SimpleGit, simpleGit } from "simple-git";
-import * as tl from "azure-pipelines-task-lib/task";
-import binaryExtensions from "binary-extensions";
-import { getFileExtension } from "./utils";
+import simpleGit, { SimpleGit } from 'simple-git';
 
-const gitOptions: Partial<SimpleGitOptions> = {
-  baseDir: `${tl.getVariable("System.DefaultWorkingDirectory")}`,
-  binary: "git",
-};
+class Git {
+    private git: SimpleGit;
 
-export const git: SimpleGit = simpleGit(gitOptions);
+    constructor() {
+        this.git = simpleGit();
+    }
 
-export async function getChangedFiles(targetBranch: string) {
-  await git.addConfig("core.pager", "cat");
-  await git.addConfig("core.quotepath", "false");
-  await git.fetch();
+    async getTargetBranch(): Promise<string> {
+        // Get the target branch from the PR
+        const branchInfo = await this.git.branch();
+        return branchInfo.current;
+    }
 
-  const diffs = await git.diff([
-    targetBranch,
-    "--name-only",
-    "--diff-filter=AM",
-  ]);
-  const files = diffs
-    .split("\n")
-    .filter((line: string) => line.trim().length > 0);
-  const nonBinaryFiles = files.filter(
-    (file: string) => !binaryExtensions.includes(getFileExtension(file))
-  );
+    async getChangedFiles(targetBranch: string): Promise<string[]> {
+        const diff = await this.git.diff(['--name-only', targetBranch]);
+        return diff.split('\n').filter(file => file.length > 0);
+    }
 
-  console.log(
-    `Changed Files (excluding binary files) : \n ${nonBinaryFiles.join("\n")}`
-  );
-
-  return nonBinaryFiles;
+    async diff(options: string[]): Promise<string> {
+        return this.git.diff(options);
+    }
 }
+
+export const git = new Git();

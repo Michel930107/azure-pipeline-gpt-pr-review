@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { git } from "./git";
-import { OpenAI } from "openai";
+import OpenAI from "openai";
 import { addCommentToPR } from "./pr";
 import { Agent } from "https";
 import * as tl from "azure-pipelines-task-lib/task";

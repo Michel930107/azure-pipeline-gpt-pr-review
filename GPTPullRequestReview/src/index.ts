@@ -1,5 +1,5 @@
 import * as tl from "azure-pipelines-task-lib/task";
-import { OpenAI } from 'openai';
+import OpenAI from 'openai';
 import { reviewFile, submitConsolidatedReview } from './review';
 import { deleteExistingComments } from './pr';
 import { git } from './git';
