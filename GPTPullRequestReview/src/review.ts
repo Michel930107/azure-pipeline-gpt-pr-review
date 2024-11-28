@@ -7,20 +7,8 @@ import * as tl from "azure-pipelines-task-lib/task";
 
 let allReviews: { fileName: string; review: string }[] = [];
 
-export async function reviewFile(
-  targetBranch: string,
-  fileName: string,
-  httpsAgent: Agent,
-  apiKey: string,
-  openai: OpenAI | undefined,
-  aoiEndpoint: string | undefined
-) {
-  console.log(`Start reviewing ${fileName} ...`);
-
-  const defaultOpenAIModel = "gpt-4o";
-  const patch = await git.diff([targetBranch, "--", fileName]);
-
-  const instructions = `Act as a senior software engineer reviewing a Pull Request. Focus only on significant technical issues and improvements.
+function getReviewInstructions(contextType: string, customContext: string): string {
+  const baseInstructions = `Act as a senior software engineer reviewing a Pull Request. Focus only on significant technical issues and improvements.
 
   Review priorities:
   1. Critical Issues:
@@ -46,12 +34,31 @@ export async function reviewFile(
   Guidelines:
   - Only comment if you find significant issues that need addressing
   - Skip minor stylistic issues or subjective preferences
-  - Don't comment on correct code or provide positive feedback
   - Be specific and technical in your feedback
   - Provide clear reasoning for each issue raised
-  - Suggest concrete solutions when pointing out problems
+  - Suggest concrete solutions when pointing out problems`;
 
-  Review the provided patch/diff and focus only on the changed lines.`;
+  // Add custom context if provided
+  const additionalContext = customContext ? `\n\nAdditional Review Context:\n${customContext}` : '';
+
+  return `${baseInstructions}${additionalContext}\n\nReview the provided patch/diff and focus only on the changed lines.`;
+}
+
+export async function reviewFile(
+  targetBranch: string,
+  fileName: string,
+  httpsAgent: Agent,
+  apiKey: string,
+  openai: OpenAI | undefined,
+  aoiEndpoint: string | undefined
+) {
+  console.log(`Start reviewing ${fileName} ...`);
+
+  const defaultOpenAIModel = "gpt-4o";
+  const patch = await git.diff([targetBranch, "--", fileName]);
+  
+  const additionalContext = tl.getInput('additional_context') || '';
+  const instructions = getReviewInstructions('general', additionalContext);
 
   try {
     let choices: any;

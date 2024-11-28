@@ -1,7 +1,7 @@
 {
   "id": "b42fa530-c4a6-11ed-87f6-d1f44a1fead1",
   "name": "GPTPullRequestReview",
-  "friendlyName": "Review PullRequest by GPT",
+  "friendlyName": "FXS Review PullRequest by GPT",
   "description": "This task use OpenAi GPT model to review PullRequests",
   "author": "Mustapha Larhrouch",
   "helpMarkDown": "[More Information](https://github.com/mlarhrouch/azure-pipeline-gpt-pr-review)",
@@ -23,6 +23,29 @@
       "defaultValue": "",
       "required": true,
       "helpMarkDown": "Api key of OpenAi or Azure OpenAI."
+    },
+    {
+      "name": "context_type",
+      "type": "pickList",
+      "label": "Review Context",
+      "required": false,
+      "defaultValue": "general",
+      "options": {
+        "general": "General Code Review",
+        "security": "Security Focused",
+        "performance": "Performance Focused",
+        "architecture": "Architecture Review",
+        "custom": "Custom Context"
+      },
+      "helpMarkDown": "Select the type of review context to focus on specific aspects"
+    },
+    {
+      "name": "additional_context",
+      "type": "multiLine",
+      "label": "Additional Review Context",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Provide additional review instructions or context (optional)"
     },
     {
       "name": "model",
